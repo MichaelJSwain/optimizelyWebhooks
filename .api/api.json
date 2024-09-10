@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "feature-experimentation",
+      "source": "@feature-experimentation/v1.0#k6h1xm0ayj7v1",
+      "integrity": "sha512-3d+Hn1omcDKD9r3fZWCycAXaS4Kdf2chn6kDaOdLhihQbDQY5ACcucHHJMF3GkAvwGfw8KX6CfqsdVOuL/638w==",
+      "installerVersion": "6.1.2"
+    }
+  ]
+}
