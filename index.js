@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+require('dotenv').config();
+
+const port = process.env.PORT || 4000;
 
 // parse application/json
 app.use(bodyParser.json())
@@ -24,6 +27,6 @@ app.post("/webhooks/optimizely", (req, res) => {
 
 });
 
-app.listen(3000, () => {
-    console.log("app listening on port 3000");
+app.listen(port, () => {
+    console.log("app listening on port ", port);
 });
