@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 // parse application/json
 app.use(bodyParser.json())
 
-app.post("/optimizely/webhooks", (req, res) => {
+app.post("/webhooks/optimizely", (req, res) => {
     console.log("webhook received = ", req.body);
     if (req.body.event?.indexOf("project.ruleset_updated") > -1 &&
         req.body.data[0]?.summary &&
