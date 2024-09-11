@@ -18,11 +18,13 @@ app.post("/webhooks/optimizely", async (req, res) => {
         req.body.data[0].summary.indexOf("Production") > -1
     ) {
         console.log("ruleset updated");
-        if (req.body.data[0]?.changes[2]?.property &&
-            req.body.data[0].changes[2].property === "enabled"
+        if ((req.body.data[0]?.changes[2]?.property &&
+            req.body.data[0].changes[2].property === "enabled") ||
+            (req.body.data[0]?.changes[1]?.property &&
+                req.body.data[0].changes[1].property === "enabled")
         ) {
             const flagKey = req.body.data[0].entity.api_url.split("flags/")[1].split("/")[0];
-            if (req.body.data[0].changes[2].after === true) {
+            if (req.body.data[0].changes[1].after === true || req.body.data[0].changes[2].after === true) {
                 const projectID = req.body.data[0].entity.api_url.split("projects/")[1].split("/flags")[0];
 
                 const envKey = "production";
