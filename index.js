@@ -12,7 +12,7 @@ const emailAuthPass = process.env.EMAIL_AUTH_PASS
 app.use(bodyParser.json())
 
 app.post("/webhooks/optimizely", async (req, res) => {
-    // console.log("webhook received = ", req.body.data);
+    console.log("webhook received = ", req.body.data);
     if (req.body.event?.indexOf("project.ruleset_updated") > -1 &&
         req.body.data[0]?.summary &&
         req.body.data[0].summary.indexOf("Production") > -1
@@ -29,10 +29,10 @@ app.post("/webhooks/optimizely", async (req, res) => {
                 
                 const issues = checkRules(flagRules);
                 const message = createMessage(flagKey, notifications.testLaunched.subject, notifications.testLaunched.body, issues)
-                sendNotification(message);
+                // sendNotification(message);
             } else {
                 const message = createMessage(flagKey, notifications.testPaused.subject, notifications.testPaused.body, [])
-                sendNotification(message);
+                // sendNotification(message);
                 // sendNotification(notifications.testPaused.subject, notifications.testPaused.subject, []);
             }
         }
