@@ -58,6 +58,12 @@ app.post("/webhooks/optimizely", async (req, res) => {
                     const body = notifications.changeDuringRuntime.body.split("<condition>").join("Traffic allocation").split("<experiment_name>").join(flagKey);
                     const message = createMessage(flagKey, subject, body, [])
                     sendNotification(message);
+                } else if (req.body.data[0].changes[1].description.indexOf("audience") > -1) {
+                    console.log("audience changed");
+                    const subject = notifications.changeDuringRuntime.subject.split("<condition>").join("Audience");
+                    const body = notifications.changeDuringRuntime.body.split("<condition>").join("Audience").split("<experiment_name>").join(flagKey);
+                    const message = createMessage(flagKey, subject, body, [])
+                    sendNotification(message);
                 }
             }
         }
