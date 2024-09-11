@@ -17,6 +17,7 @@ app.post("/webhooks/optimizely", async (req, res) => {
         req.body.data[0]?.summary &&
         req.body.data[0].summary.indexOf("Production") > -1
     ) {
+        console.log("ruleset updated");
         if (req.body.data[0]?.changes[2]?.property &&
             req.body.data[0].changes[2].property === "enabled"
         ) {
@@ -29,11 +30,33 @@ app.post("/webhooks/optimizely", async (req, res) => {
                 
                 const issues = checkRules(flagRules);
                 const message = createMessage(flagKey, notifications.testLaunched.subject, notifications.testLaunched.body, issues)
-                // sendNotification(message);
+                sendNotification(message);
             } else {
                 const message = createMessage(flagKey, notifications.testPaused.subject, notifications.testPaused.body, [])
-                // sendNotification(message);
+                sendNotification(message);
                 // sendNotification(notifications.testPaused.subject, notifications.testPaused.subject, []);
+            }
+        }
+    } else if (req.body.event?.indexOf("project.rule_updated") > -1) {
+        console.log(req.body.data[0]);
+       
+        // if type is "rule" && sub_type is "a/b"
+            // if rule status === "running"
+        console.log("rule updated");
+        if (req.body.data[0].entity.type === "rule" && req.body.data[0].entity.sub_type === "a/b") {
+            const projectID = req.body.project_id;
+            const flagKey = req.body.data[0].entity.name;
+            const envKey = "production";
+            const ruleKey = req.body.data[0].entity.name;
+            const ruleIsRunning = await fetchFlagRule(projectID, flagKey, envKey, ruleKey);
+            if (ruleIsRunning) {
+                if (req.body.data[0].changes[1].description.indexOf("percentage") > -1) {
+                    console.log("traffic allocation changed");
+                    const subject = notifications.changeDuringRuntime.subject.split("<condition>").join("Traffic allocation");
+                    const body = notifications.changeDuringRuntime.body.split("<condition>").join("Traffic allocation").split("<experiment_name>").join(flagKey);
+                    const message = createMessage(flagKey, subject, body, [])
+                    sendNotification(message);
+                }
             }
         }
     }
@@ -43,6 +66,28 @@ app.post("/webhooks/optimizely", async (req, res) => {
 app.listen(port, () => {
     console.log("app listening on port ", port);
 });
+
+async function fetchFlagRule(projectID, flagKey, envKey, ruleKey) {
+    console.log(projectID, flagKey, envKey, ruleKey);
+    const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer 2:Y9EOz6drYVYtc7V9sAx3rdFINmfEc-DPUu54de4r_Mg_hJb5lzuE'
+        }
+      };
+      
+      const flagRule = await fetch(`https://api.optimizely.com/flags/v1/projects/${projectID}/flags/${flagKey}/environments/${envKey}/rules/${ruleKey}`, options)
+        .then(response => response.json())
+        .then(response => {
+            
+            return response.status === "running" ? true : false;
+        })
+        .catch(err => {
+            return "error fetching flag rules";
+        });
+      return flagRule;
+}
 
 async function fetchFlagRules(projectID, flagKey, envKey) {
     const options = {
