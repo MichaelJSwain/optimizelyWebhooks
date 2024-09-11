@@ -178,7 +178,7 @@ function createMessage(flagKey, subject, messageBody, issues) {
 
     const mailOptions = {
         from: 'michaeljswain@gmail.com',
-        to: 'michaeljswain@gmail.com',
+        to: 'michaelswain@tommy.com',
         subject,
         html: text
       };
